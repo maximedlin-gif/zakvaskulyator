@@ -260,3 +260,4 @@ select.input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://ww
 .feedback-head { padding-left: 0; padding-right: 0; }
 .feedback-output { margin-bottom: 10px; }
 .feedback-back { margin-top: 4px; }
+.paste-action { margin-top:8px; }
