@@ -44,6 +44,7 @@ body {
 }
 h1,h2,h3,h4 { margin: 0; font-weight: 700; letter-spacing: 0; }
 p { margin: 0 0 .6em; }
+a { color: var(--crust); text-decoration: none; font-weight: 700; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 input, select { font-family: inherit; font-size: 16px; }
 
@@ -112,12 +113,13 @@ input, select { font-family: inherit; font-size: 16px; }
 /* ---------- Form ---------- */
 .field { margin-bottom: 12px; }
 .field > label { display:block; font-size: 12.5px; font-weight:600; color: var(--ink-soft); margin-bottom: 5px; }
-.input, select.input {
+.input, select.input, textarea.input {
   width: 100%; padding: 12px 13px; border-radius: var(--r-sm);
   border: 1.5px solid var(--line); background: var(--card-2); color: var(--ink);
   appearance: none; transition: border-color .15s;
 }
 .input:focus { outline: none; border-color: var(--crust); }
+textarea.input { resize: vertical; min-height: 92px; line-height: 1.4; }
 select.input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%239c8f7d' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
   background-repeat:no-repeat; background-position: right 13px center; padding-right: 34px; }
 .row { display:flex; gap:10px; }
@@ -245,3 +247,14 @@ select.input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://ww
 .disclaimer { font-size:11.5px; color:var(--ink-faint); text-align:center; padding:6px 8px 0; line-height:1.5; }
 .foot { text-align:center; font-size:11px; color:var(--ink-faint); padding:14px 0 4px; }
 .linkish { color:var(--crust); font-weight:600; }
+
+/* ---------- Feedback ---------- */
+.feedback-page {
+  max-width: 460px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 0 16px calc(var(--safe-b) + 24px);
+}
+.feedback-head { padding-left: 0; padding-right: 0; }
+.feedback-output { margin-bottom: 10px; }
+.feedback-back { margin-top: 4px; }
