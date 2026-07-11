@@ -368,18 +368,41 @@ function renderTracker(){
 }
 
 /* ============ ЖУРНАЛ ============ */
+function journalDate(ts){
+  const d=new Date(ts);
+  return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function buildJournalText(j){
+  return [
+    'Закваскулятор: журнал брожения',
+    '',
+    ...j.map((e,i)=>`${i+1}. ${journalDate(e.ts)} — ${e.text}`),
+  ].join('\n');
+}
 function addJournal(text){
   const j=LS.get('journal',[]); j.unshift({text, ts:Date.now()}); LS.set('journal',j.slice(0,50)); renderJournal();
 }
 function renderJournal(){
   const j=LS.get('journal',[]), el=$('#journal-list');
+  const copyBtn=$('#j-copy'), status=$('#j-copy-status');
+  status.classList.add('hidden');
+  copyBtn.classList.toggle('hidden', !j.length);
   if(!j.length){ el.innerHTML='<div class="empty">Пока пусто. Завершённые брожения и заметки появятся здесь.</div>'; return; }
   el.innerHTML=j.map((e,i)=>{ const d=new Date(e.ts);
-    const ds=`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const ds=journalDate(e.ts);
     return `<div class="jrow"><div class="jd">${ds}</div><div class="jt">${e.text}</div><button class="jx" data-j="${i}">×</button></div>`;
   }).join('');
   $$('[data-j]').forEach(b=>b.onclick=()=>{const j=LS.get('journal',[]);j.splice(+b.dataset.j,1);LS.set('journal',j);renderJournal();});
 }
+$('#j-copy').onclick = async ()=>{
+  const status=$('#j-copy-status');
+  const j=LS.get('journal',[]);
+  const ok=await copyText(buildJournalText(j));
+  status.textContent=ok?'Журнал скопирован.':'Не удалось скопировать автоматически. Выделите журнал вручную.';
+  status.classList.toggle('warn', !ok);
+  status.classList.toggle('ok', ok);
+  status.classList.remove('hidden');
+};
 
 /* ============ ПРОФИЛИ ============ */
 const groupIcon = g => g.includes('Ржаные')?'🌾':g.includes('Древние')?'🌱':'🌽';
