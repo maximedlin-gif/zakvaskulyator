@@ -147,6 +147,7 @@ select.input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://ww
 /* ---------- Result block ---------- */
 .result { background: var(--card-2); border:1px solid var(--line); border-radius:var(--r); padding:14px; margin-top:12px; }
 .result.hidden { display:none; }
+.result-action { margin-top:10px; }
 .res-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
 .res-cell { background:var(--card); border:1px solid var(--line); border-radius:var(--r-sm); padding:11px 12px; }
 .res-cell .v { font-size:21px; font-weight:800; color:var(--crust-dk); }

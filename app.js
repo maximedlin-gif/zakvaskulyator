@@ -72,13 +72,37 @@ const profById = id => PROFILES.find(p=>p.id===id);
 
 /* ============ КАЛЬКУЛЯТОР ============ */
 let cShyd = 100;
+let lastCalcText = '';
+async function copyText(text){
+  if(!text) return false;
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const ta=document.createElement('textarea');
+    ta.value=text;
+    ta.setAttribute('readonly','');
+    ta.style.position='fixed';
+    ta.style.left='-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    let ok=false;
+    try { ok=document.execCommand('copy'); } catch { ok=false; }
+    ta.remove();
+    return ok;
+  }
+}
 function showCalcWarning(text){
+  lastCalcText = '';
   $('#r-flour').textContent = '—';
   $('#r-water').textContent = '—';
   $('#r-starter').textContent = '—';
   $('#r-salt').textContent = '—';
   $('#r-build').classList.add('hidden');
   $('#r-add').classList.add('hidden');
+  $('#c-copy').classList.add('hidden');
+  $('#c-copy-status').classList.add('hidden');
   $('#c-alert').textContent = text;
   $('#c-alert').classList.remove('hidden');
   $('#c-result').classList.remove('hidden');
@@ -87,6 +111,8 @@ function showCalcResult(){
   $('#c-alert').classList.add('hidden');
   $('#r-build').classList.remove('hidden');
   $('#r-add').classList.remove('hidden');
+  $('#c-copy').classList.remove('hidden');
+  $('#c-copy-status').classList.add('hidden');
   $('#c-result').classList.remove('hidden');
 }
 function showWhenResult(html, kind=''){
@@ -140,10 +166,39 @@ $('#c-go').onclick = ()=>{
   const parts = ratio[0]+ratio[1]+ratio[2];
   const need = St*1.15;              // +15% запас
   const seed=need*ratio[0]/parts, fl=need*ratio[1]/parts, wa=need*ratio[2]/parts;
+  const rounded = {
+    flour: Math.round(F),
+    water: Math.round(Wt),
+    starter: Math.round(St),
+    salt: Math.round(Salt),
+    seed: Math.round(seed),
+    feedFlour: Math.round(fl),
+    feedWater: Math.round(wa),
+    need: Math.round(need),
+    addFlour: Math.round(Math.max(0, Fa)),
+    addWater: Math.round(Math.max(0, Wa)),
+  };
   $('#r-build').innerHTML = `<b>Вырастить закваску</b> (${ratio.join(':')}, +15% запас): `
-    + `${Math.round(seed)} г стартера + ${Math.round(fl)} г муки + ${Math.round(wa)} г воды → ≈${Math.round(need)} г.`;
-  $('#r-add').innerHTML = `<b>В тесто добавить:</b> мука ${Math.round(Math.max(0, Fa))} г · вода ${Math.round(Math.max(0, Wa))} г · соль ${Math.round(Salt)} г · зрелая закваска ${Math.round(St)} г.`;
+    + `${rounded.seed} г стартера + ${rounded.feedFlour} г муки + ${rounded.feedWater} г воды → ≈${rounded.need} г.`;
+  $('#r-add').innerHTML = `<b>В тесто добавить:</b> мука ${rounded.addFlour} г · вода ${rounded.addWater} г · соль ${rounded.salt} г · зрелая закваска ${rounded.starter} г.`;
+  lastCalcText = [
+    'Закваскулятор: расчёт теста',
+    '',
+    `Параметры: тесто ${W} г, гидратация ${H}%, зрелая закваска ${S}% муки, соль ${saltPct}%, гидратация закваски ${SH}%.`,
+    `Итог: мука всего ${rounded.flour} г, вода всего ${rounded.water} г, зрелая закваска ${rounded.starter} г, соль ${rounded.salt} г.`,
+    `Вырастить закваску (${ratio.join(':')}, +15% запас): ${rounded.seed} г стартера + ${rounded.feedFlour} г муки + ${rounded.feedWater} г воды -> около ${rounded.need} г.`,
+    `В тесто добавить: мука ${rounded.addFlour} г, вода ${rounded.addWater} г, соль ${rounded.salt} г, зрелая закваска ${rounded.starter} г.`,
+  ].join('\n');
   showCalcResult();
+};
+
+$('#c-copy').onclick = async ()=>{
+  const status=$('#c-copy-status');
+  const ok=await copyText(lastCalcText);
+  status.textContent=ok?'Расчёт скопирован.':'Не удалось скопировать автоматически. Выделите результат вручную.';
+  status.classList.toggle('warn', !ok);
+  status.classList.toggle('ok', ok);
+  status.classList.remove('hidden');
 };
 
 $('#c-when').onclick = ()=>{
