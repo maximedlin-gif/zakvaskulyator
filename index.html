@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#b5793a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Закваскулятор">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+<title>Закваскулятор</title>
+</head>
+<body>
+<div id="app">
+
+  <!-- ================= ГЛАВНАЯ ================= -->
+  <section id="home" class="screen active">
+    <div class="app-head">
+      <div class="logo">🫙</div>
+      <div>
+        <div class="ttl">Закваскулятор</div>
+        <div class="sub">калькулятор и помощник по закваске</div>
+      </div>
+    </div>
+
+    <!-- активный трекер -->
+    <div id="tracker"></div>
+
+    <div class="section-label">Журнал брожения</div>
+    <div class="card">
+      <div id="journal-list"></div>
+    </div>
+
+    <div class="foot">«Закваскулятор» · автономная версия · журнал хранится на этом устройстве</div>
+  </section>
+
+  <!-- ================= КАЛЬКУЛЯТОР ================= -->
+  <section id="calc" class="screen">
+    <div class="app-head"><div class="logo">🧮</div><div><div class="ttl">Калькулятор</div><div class="sub">расчёт закваски, муки и воды под партию</div></div></div>
+
+    <div class="card">
+      <h3>Параметры теста</h3>
+      <div class="field">
+        <label>Итоговый вес теста, г</label>
+        <div class="stepper"><button data-step="dough" data-d="-50">–</button><input id="c-dough" type="number" inputmode="numeric" value="1000"><button data-step="dough" data-d="50">+</button></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Гидратация теста, %</label><input id="c-hyd" class="input" type="number" inputmode="numeric" value="70"></div>
+        <div class="field"><label>Доля закваски, % муки</label><input id="c-starter" class="input" type="number" inputmode="numeric" value="20"></div>
+      </div>
+      <div class="field"><label>Соль, % муки</label><input id="c-salt" class="input" type="number" inputmode="decimal" value="2" step="0.1"></div>
+      <div class="field">
+        <label>Гидратация закваски, %</label>
+        <div class="seg" id="c-shyd">
+          <button data-v="100" class="on">100% (пшеничная)</button>
+          <button data-v="150">150% (ржаная)</button>
+        </div>
+      </div>
+      <button class="btn" id="c-go">Рассчитать</button>
+
+      <div class="result hidden" id="c-result">
+        <div class="callout warn hidden" id="c-alert"></div>
+        <div class="res-grid">
+          <div class="res-cell"><div class="v" id="r-flour">—</div><div class="k">Мука всего, г</div></div>
+          <div class="res-cell"><div class="v" id="r-water">—</div><div class="k">Вода всего, г</div></div>
+          <div class="res-cell"><div class="v" id="r-starter">—</div><div class="k">Зрелой закваски, г</div></div>
+          <div class="res-cell"><div class="v" id="r-salt">—</div><div class="k">Соль, г</div></div>
+        </div>
+        <div class="callout" id="r-build"></div>
+        <div class="callout ok" id="r-add"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Когда покормить, чтобы успеть к замесу</h3>
+      <div class="hint" style="margin-bottom:10px">Привязка к прогнозу: выберите профиль и температуру — посчитаю, во сколько ставить кормление.</div>
+      <div class="field"><label>Профиль закваски</label><select id="c-prof" class="input"></select></div>
+      <div class="row">
+        <div class="field"><label>Температура ведения, °C</label><input id="c-temp" class="input" type="number" inputmode="decimal" value="26"></div>
+        <div class="field"><label>Замес в</label><input id="c-bake" class="input" type="time" value="09:00"></div>
+      </div>
+      <button class="btn ghost" id="c-when">Рассчитать время кормления</button>
+      <div class="callout hidden" id="c-when-res"></div>
+    </div>
+  </section>
+
+  <!-- ================= ПРОГНОЗ ================= -->
+  <section id="forecast" class="screen">
+    <div class="app-head"><div class="logo">⏱️</div><div><div class="ttl">Прогноз готовности</div><div class="sub">модель брожения Q10 · правило ~8 °C / удвоение</div></div></div>
+
+    <div class="card">
+      <div class="seg" id="f-mode" style="margin-bottom:14px">
+        <button data-v="forward" class="on">Сколько ждать</button>
+        <button data-v="reverse">Успеть к сроку</button>
+      </div>
+
+      <div class="field"><label>Профиль закваски</label><select id="f-prof" class="input"></select></div>
+      <div class="field">
+        <label>Температура закваски, °C</label>
+        <input id="f-temp" class="input" type="number" inputmode="decimal" value="26">
+      </div>
+      <div class="field" id="f-target-wrap" style="display:none">
+        <label>Нужно к моменту</label>
+        <input id="f-target" class="input" type="time" value="09:00">
+      </div>
+      <div class="field">
+        <label>Влажность воздуха</label>
+        <div class="seg" id="f-hum">
+          <button data-v="0.9">Сухо</button>
+          <button data-v="1" class="on">Норма</button>
+          <button data-v="1.1">Влажно</button>
+        </div>
+      </div>
+      <button class="btn" id="f-go">Рассчитать</button>
+    </div>
+
+    <div class="card hidden" id="f-result">
+      <div class="hero">
+        <div class="phase-chip" id="f-phase"><span class="dot"></span><span id="f-phase-t">—</span></div>
+        <div class="ring" id="f-ring"><div><div class="big" id="f-big">—</div><div class="lbl" id="f-lbl">до пика</div></div></div>
+      </div>
+      <div class="callout" id="f-explain"></div>
+      <div class="callout warn hidden" id="f-warn"></div>
+      <button class="btn ghost" id="f-track" style="margin-top:6px">▶ Поставить на трекер</button>
+    </div>
+  </section>
+
+  <!-- ================= ПРОФИЛИ ================= -->
+  <section id="profiles" class="screen">
+    <div class="app-head"><div class="logo">🌾</div><div><div class="ttl">Профили заквасок</div><div class="sub">16 профилей по типу зерна и помолу</div></div></div>
+    <div id="prof-list"></div>
+    <div class="disclaimer">Значения — стартовые ориентиры из спецификации «Умной банки» для калибровки на прототипе. Финальные профили уточняются на реальной муке.</div>
+  </section>
+
+  <!-- ================= ОБУЧЕНИЕ ================= -->
+  <section id="learn" class="screen">
+    <div class="app-head"><div class="logo">🎓</div><div><div class="ttl">Обучение</div><div class="sub">выведение, созревание, диагностика, хранение</div></div></div>
+
+    <div class="section-label">Выведение с нуля</div>
+    <div class="prof" data-learn="rye"><div class="pic">🍞</div><div><div class="pname">Ржаная закваска <span class="badge auth">протокол Едлин Хлеб</span></div><div class="pmeta">150% · 1:2:3 · день за днём</div></div><div class="pgo">›</div></div>
+    <div class="prof" data-learn="wheat"><div class="pic">🌾</div><div><div class="pname">Пшеничная закваска <span class="badge gen">ориентир</span></div><div class="pmeta">100% · переход на белую муку</div></div><div class="pgo">›</div></div>
+
+    <div class="section-label">6 стадий созревания</div>
+    <div class="card" id="maturity"></div>
+
+    <div class="section-label">Диагностика проблем</div>
+    <div class="card" id="troubleshoot"></div>
+
+    <div class="section-label">Хранение</div>
+    <div class="card" id="storage"></div>
+  </section>
+
+</div>
+
+<!-- ===== sheet: профиль ===== -->
+<div class="sheet" id="sheet-prof">
+  <div class="sheet-head"><button class="back" data-close>‹</button><h2 id="sp-title">Профиль</h2></div>
+  <div id="sp-body"></div>
+</div>
+
+<!-- ===== sheet: обучение ===== -->
+<div class="sheet" id="sheet-learn">
+  <div class="sheet-head"><button class="back" data-close>‹</button><h2 id="sl-title">Выведение</h2></div>
+  <div id="sl-body"></div>
+</div>
+
+<!-- ===== Tab bar ===== -->
+<nav class="tabbar">
+  <button class="tab on" data-tab="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Главная</button>
+  <button class="tab" data-tab="calc"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h0M13 11h0M9 15h0M13 15h0"/></svg>Калькулятор</button>
+  <button class="tab" data-tab="forecast"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13V9M12 2h0M9 2h6"/></svg>Прогноз</button>
+  <button class="tab" data-tab="profiles"><svg viewBox="0 0 24 24"><path d="M4 19V5M9 19V9M14 19v-6M19 19V7"/></svg>Профили</button>
+  <button class="tab" data-tab="learn"><svg viewBox="0 0 24 24"><path d="M3 6l9-3 9 3-9 3-9-3z"/><path d="M21 6v6M7 8v6c0 1 2 3 5 3s5-2 5-3V8"/></svg>Обучение</button>
+</nav>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>
+</body>
+</html>
