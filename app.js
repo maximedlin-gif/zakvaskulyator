@@ -390,13 +390,14 @@ function addJournal(text){
 }
 function renderJournal(){
   const j=LS.get('journal',[]), el=$('#journal-list');
-  const copyBtn=$('#j-copy'), status=$('#j-copy-status');
+  const copyBtn=$('#j-copy'), clearBtn=$('#j-clear'), status=$('#j-copy-status');
   status.classList.add('hidden');
   copyBtn.classList.toggle('hidden', !j.length);
+  clearBtn.classList.toggle('hidden', !j.length);
   if(!j.length){ el.innerHTML='<div class="empty">Пока пусто. Завершённые брожения и заметки появятся здесь.</div>'; return; }
   el.innerHTML=j.map((e,i)=>{ const d=new Date(e.ts);
     const ds=journalDate(e.ts);
-    return `<div class="jrow"><div class="jd">${ds}</div><div class="jt">${e.text}</div><button class="jx" data-j="${i}">×</button></div>`;
+    return `<div class="jrow"><div class="jd">${ds}</div><div class="jt">${e.text}</div><button class="jx" data-j="${i}" aria-label="Удалить запись из журнала" title="Удалить запись">×</button></div>`;
   }).join('');
   $$('[data-j]').forEach(b=>b.onclick=()=>{const j=LS.get('journal',[]);j.splice(+b.dataset.j,1);LS.set('journal',j);renderJournal();});
 }
@@ -408,6 +409,12 @@ $('#j-copy').onclick = async ()=>{
   status.classList.toggle('warn', !ok);
   status.classList.toggle('ok', ok);
   status.classList.remove('hidden');
+};
+$('#j-clear').onclick=()=>{
+  if(!LS.get('journal',[]).length) return;
+  if(!window.confirm('Удалить все записи журнала с этого устройства? Это действие нельзя отменить.')) return;
+  LS.set('journal',[]);
+  renderJournal();
 };
 
 /* ============ ПРОФИЛИ ============ */
