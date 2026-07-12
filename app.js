@@ -281,6 +281,17 @@ function updateScheduleOptions(){
   if(!spec.coldProofMin) $('#s-cold').checked=false;
 }
 $('#s-bread').onchange=updateScheduleOptions;
+const savedSchedule=LS.get('schedule_settings', {});
+if(savedSchedule && typeof savedSchedule==='object'){
+  if(BAKING_SCHEDULES[savedSchedule.bread]) $('#s-bread').value=savedSchedule.bread;
+  if(isFinite(Number(savedSchedule.temp))) $('#s-temp').value=savedSchedule.temp;
+  if(parseTimeValue(savedSchedule.ready)) $('#s-ready').value=savedSchedule.ready;
+  $('#s-cold').checked=Boolean(savedSchedule.cold);
+}
+function saveScheduleSettings(){
+  LS.set('schedule_settings', { bread:$('#s-bread').value, temp:$('#s-temp').value, ready:$('#s-ready').value, cold:$('#s-cold').checked });
+}
+['#s-bread', '#s-temp', '#s-ready', '#s-cold'].forEach(selector=>$(selector).addEventListener(selector==='#s-temp' ? 'input' : 'change', saveScheduleSettings));
 const savedOvenTemp=Number(LS.get('oven_max_temp', 250));
 $('#s-oven-temp').value=isFinite(savedOvenTemp) && savedOvenTemp>0 ? savedOvenTemp : 250;
 $('#s-steam').checked=LS.get('oven_can_steam', true) !== false;
