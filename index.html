@@ -90,6 +90,29 @@
       <button class="btn ghost" id="c-when">Рассчитать время кормления</button>
       <div class="callout hidden" id="c-when-res"></div>
     </div>
+
+    <div class="card">
+      <h3>Расписание выпечки</h3>
+      <div class="hint" style="margin-bottom:10px">Построю порядок действий назад от времени, когда хлеб нужен.</div>
+      <div class="field"><label>Хлеб</label><select id="s-bread" class="input">
+        <option value="rye-tin">Ржаной формовой</option>
+        <option value="wheat-tin">Пшеничный формовой</option>
+        <option value="wheat-hearth">Пшеничный подовый</option>
+        <option value="baguette">Багет</option>
+      </select></div>
+      <div class="field"><label>Закваска</label><select id="s-prof" class="input"></select><div class="profile-hint" id="s-profile-hint"></div></div>
+      <div class="row">
+        <div class="field"><label>Температура теста, °C</label><input id="s-temp" class="input" type="number" inputmode="decimal" value="25"></div>
+        <div class="field"><label>Хлеб нужен к</label><input id="s-ready" class="input" type="time" value="09:00"></div>
+      </div>
+      <label class="check-row hidden" id="s-cold-wrap"><input id="s-cold" type="checkbox"> Холодная расстойка в холодильнике</label>
+      <button class="btn" id="s-go">Построить расписание</button>
+      <div class="result hidden" id="s-result">
+        <div class="callout warn hidden" id="s-alert"></div>
+        <div id="s-timeline" class="timeline"></div>
+        <div class="disclaimer">Время ориентировочное: следите за тестом и скорректируйте следующий замес по своей муке и температуре.</div>
+      </div>
+    </div>
   </section>
 
   <!-- ================= ПРОГНОЗ ================= -->

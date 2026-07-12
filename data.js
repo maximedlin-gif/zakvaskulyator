@@ -48,6 +48,36 @@ const MODEL = {
   tHibernate: 10, // ниже — гибернация
 };
 
+// --- Расписание выпечки: стартовые технологические ориентиры ----------------
+// Время брожения масштабируется в app.js по правилу Q10. Это не заменяет
+// наблюдение за тестом и не задаёт индивидуальный профиль духовки.
+const BAKING_SCHEDULES = {
+  'rye-tin': {
+    name: 'Ржаной формовой', starter: ['rye'], mixMin: 20,
+    bulk: { min: 3.5, max: 4.5, temp: 25, label: 'Брожение в форме' },
+    proofMin: 0, preheatMin: 30, coolingMin: 720, folds: false,
+    baking: [{ label: 'Посадка', temp: 235, min: 10 }, { label: 'Допекание', temp: 180, min: 40 }],
+  },
+  'wheat-tin': {
+    name: 'Пшеничный формовой', starter: ['wheat', 'rye', 'spelt'], mixMin: 20,
+    bulk: { min: 3, max: 4, temp: 24, label: 'Брожение' },
+    proofMin: 105, coldProofMin: 660, preheatMin: 30, coolingMin: 60, folds: true,
+    baking: [{ label: 'Посадка', temp: 240, min: 10 }, { label: 'Допекание', temp: 180, min: 40 }],
+  },
+  'wheat-hearth': {
+    name: 'Пшеничный подовый', starter: ['wheat', 'rye', 'spelt'], mixMin: 20,
+    bulk: { min: 3, max: 4, temp: 24, label: 'Брожение' },
+    proofMin: 105, coldProofMin: 660, preheatMin: 60, coolingMin: 60, folds: true,
+    baking: [{ label: 'Выпечка с паром', temp: 240, min: 15 }, { label: 'Допекание без пара', temp: 205, min: 35 }],
+  },
+  baguette: {
+    name: 'Багет', starter: ['wheat'], mixMin: 20,
+    bulk: { min: 3, max: 4, temp: 24, label: 'Брожение' },
+    proofMin: 75, preheatMin: 45, coolingMin: 15, folds: true,
+    baking: [{ label: 'Выпечка с паром', temp: 245, min: 12 }, { label: 'Выпечка без пара', temp: 215, min: 15 }],
+  },
+};
+
 // --- Обучение: выведение закваски с нуля --------------------------------------
 // Ржаная — авторитетный протокол «Едлин Хлеб» (150% гидратация, 1:2:3)
 const CULTIVATION = {

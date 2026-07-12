@@ -250,6 +250,85 @@ $('#c-when').onclick = ()=>{
   showWhenResult(html, reg.key==='hot'?'warn':'');
 };
 
+/* ============ РАСПИСАНИЕ ВЫПЕЧКИ ============ */
+const starterKind = p => p.id.startsWith('rye') ? 'rye' : p.id.startsWith('wheat') ? 'wheat' : p.id.startsWith('spelt') || p.id.startsWith('polba') || p.id.startsWith('einkorn') ? 'spelt' : 'gluten_free';
+const scheduleTarget = value => {
+  const parsed=parseTimeValue(value);
+  if(!parsed) return null;
+  const target=new Date(); target.setHours(parsed.hh, parsed.mm, 0, 0);
+  if(target<=new Date()) target.setDate(target.getDate()+1);
+  return target;
+};
+const scheduleEvent = (items, start, label, note='', parallel=false) => items.push({start, label, note, parallel});
+function renderScheduleWarning(text){
+  $('#s-alert').textContent=text;
+  $('#s-alert').classList.remove('hidden');
+  $('#s-timeline').innerHTML='';
+  $('#s-result').classList.remove('hidden');
+}
+function updateScheduleOptions(){
+  const spec=BAKING_SCHEDULES[$('#s-bread').value];
+  $('#s-cold-wrap').classList.toggle('hidden', !spec.coldProofMin);
+  if(!spec.coldProofMin) $('#s-cold').checked=false;
+}
+$('#s-bread').onchange=updateScheduleOptions;
+$('#s-go').onclick=()=>{
+  const spec=BAKING_SCHEDULES[$('#s-bread').value];
+  const p=profById($('#s-prof').value);
+  const doughTemp=parseNumberValue($('#s-temp').value);
+  const ready=scheduleTarget($('#s-ready').value);
+  if(!spec || !p || !isFinite(doughTemp) || !ready){
+    renderScheduleWarning('Выберите хлеб, закваску, температуру теста и время, когда нужен хлеб.');
+    return;
+  }
+  if(!spec.starter.includes(starterKind(p))){
+    const needed=spec.starter.length===1 && spec.starter[0]==='wheat' ? 'пшеничная закваска' : 'подходящая закваска';
+    renderScheduleWarning(`Для «${spec.name}» нужна ${needed}. Выберите её в поле «Закваска».`);
+    return;
+  }
+  const factor=Math.pow(2, (spec.bulk.temp-doughTemp)/MODEL.dtDouble);
+  const bulkHours=((spec.bulk.min+spec.bulk.max)/2)*factor;
+  const bakingMin=spec.baking.reduce((sum, stage)=>sum+stage.min, 0);
+  const items=[];
+  let cursor=new Date(ready);
+  if(spec.coolingMin){
+    cursor=new Date(cursor.getTime()-spec.coolingMin*60000);
+    scheduleEvent(items, cursor, 'Остывание', spec.coolingMin>=60 ? `не резать ${fmtH(spec.coolingMin/60)}` : `${spec.coolingMin} мин на решётке`);
+  }
+  const bakeStart=new Date(cursor.getTime()-bakingMin*60000);
+  let bakeCursor=new Date(bakeStart);
+  spec.baking.forEach(stage=>{
+    scheduleEvent(items, new Date(bakeCursor), stage.label, `${stage.temp} °C · ${stage.min} мин`);
+    bakeCursor=new Date(bakeCursor.getTime()+stage.min*60000);
+  });
+  scheduleEvent(items, new Date(bakeStart.getTime()-spec.preheatMin*60000), 'Разогреть духовку', `${spec.preheatMin} мин`, true);
+  cursor=new Date(bakeStart);
+  if($('#s-cold').checked && spec.coldProofMin){
+    cursor=new Date(cursor.getTime()-spec.coldProofMin*60000);
+    scheduleEvent(items, cursor, 'Холодная расстойка', `холодильник · ${fmtH(spec.coldProofMin/60)}`);
+  } else if(spec.proofMin){
+    cursor=new Date(cursor.getTime()-spec.proofMin*60000);
+    scheduleEvent(items, cursor, 'Финальная расстойка', `${spec.proofMin} мин`);
+  }
+  if(spec.proofMin || $('#s-cold').checked){
+    cursor=new Date(cursor.getTime()-15*60000);
+    scheduleEvent(items, cursor, 'Формовка', '15 мин');
+  }
+  cursor=new Date(cursor.getTime()-bulkHours*3600000);
+  scheduleEvent(items, cursor, spec.bulk.label, `${spec.bulk.min}–${spec.bulk.max} ч при ${spec.bulk.temp} °C; при ${doughTemp} °C ориентир ${fmtH(bulkHours)}`);
+  const mixStart=new Date(cursor.getTime()-spec.mixMin*60000);
+  scheduleEvent(items, mixStart, 'Замес теста', `${spec.mixMin} мин`);
+  if(spec.folds){
+    [30, 60, 90].forEach((minutes, index)=>scheduleEvent(items, new Date(mixStart.getTime()+minutes*60000), `Складывание ${index+1}`, 'мягко, без лишней муки'));
+  }
+  const levainHours=timeToPeak(p, doughTemp);
+  scheduleEvent(items, new Date(mixStart.getTime()-levainHours*3600000), 'Освежить закваску', `до пика примерно ${fmtH(levainHours)} при ${doughTemp} °C`);
+  items.sort((a,b)=>a.start-b.start);
+  $('#s-alert').classList.add('hidden');
+  $('#s-timeline').innerHTML=items.map(item=>`<div class="timeline-item${item.parallel?' parallel':''}"><div class="timeline-time">${fmtDayTime(item.start)}</div><div><div class="timeline-title">${item.label}</div>${item.note?`<div class="timeline-note">${item.note}</div>`:''}</div></div>`).join('');
+  $('#s-result').classList.remove('hidden');
+};
+
 /* ============ ПРОГНОЗ ============ */
 let fMode='forward', fHum=1;
 $('#f-mode').onclick=e=>{const b=e.target.closest('button');if(!b)return;
@@ -526,9 +605,11 @@ function renderLearn(){
 /* ============ Старт ============ */
 fillProfileSelect($('#c-prof'));
 fillProfileSelect($('#f-prof'));
+fillProfileSelect($('#s-prof'));
 const profileControls=[
   {select:$('#c-prof'), hint:$('#c-profile-hint')},
   {select:$('#f-prof'), hint:$('#f-profile-hint')},
+  {select:$('#s-prof'), hint:$('#s-profile-hint')},
 ];
 const savedProfileId=LS.get('last_profile', '');
 function applyProfile(id){
@@ -541,6 +622,7 @@ function applyProfile(id){
 }
 applyProfile(typeof savedProfileId==='string' && profById(savedProfileId) ? savedProfileId : $('#f-prof').value);
 profileControls.forEach(({select})=>{ select.onchange=()=>applyProfile(select.value); });
+updateScheduleOptions();
 renderProfiles();
 renderLearn();
 renderJournal();

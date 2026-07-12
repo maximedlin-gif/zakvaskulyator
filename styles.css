@@ -123,6 +123,8 @@ textarea.input { resize: vertical; min-height: 92px; line-height: 1.4; }
 select.input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%239c8f7d' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
   background-repeat:no-repeat; background-position: right 13px center; padding-right: 34px; }
 .profile-hint { font-size:12px; color:var(--ink-faint); line-height:1.35; margin:6px 2px 0; }
+.check-row { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-soft); margin:-2px 0 12px; }
+.check-row input { width:18px; height:18px; accent-color:var(--crust); }
 .row { display:flex; gap:10px; }
 .row > .field { flex:1; }
 
@@ -158,6 +160,13 @@ select.input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://ww
   border-left:3px solid var(--amber); border-radius:8px; padding:9px 11px; margin-top:8px; }
 .callout.warn { background:rgba(212,83,63,.10); border-color:var(--red); }
 .callout.ok { background:rgba(79,157,93,.12); border-color:var(--green); }
+.timeline { margin-top:12px; }
+.timeline-item { display:grid; grid-template-columns:58px 1fr; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); }
+.timeline-item:last-child { border-bottom:none; }
+.timeline-time { font-size:11px; color:var(--ink-faint); font-weight:700; padding-top:2px; }
+.timeline-title { font-size:13.5px; font-weight:700; }
+.timeline-note { font-size:12px; color:var(--ink-soft); margin-top:2px; }
+.timeline-item.parallel .timeline-title::before { content:'Параллельно: '; color:var(--crust); }
 
 /* ---------- Profile list ---------- */
 .prof-group { margin-bottom: 6px; }
