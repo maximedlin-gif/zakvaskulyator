@@ -260,15 +260,19 @@ const scheduleTarget = value => {
   return target;
 };
 const scheduleEvent = (items, start, label, note='', parallel=false) => items.push({start, label, note, parallel});
+let lastScheduleText='';
 function ovenCapacity(width, depth, footprint){
   const gap=2;
   const fit=(a,b)=>Math.max(0, Math.floor((width+gap)/(a+gap))) * Math.max(0, Math.floor((depth+gap)/(b+gap)));
   return Math.max(fit(footprint[0], footprint[1]), fit(footprint[1], footprint[0]));
 }
 function renderScheduleWarning(text){
+  lastScheduleText='';
   $('#s-alert').textContent=text;
   $('#s-alert').classList.remove('hidden');
   $('#s-timeline').innerHTML='';
+  $('#s-copy').classList.add('hidden');
+  $('#s-copy-status').classList.add('hidden');
   $('#s-result').classList.remove('hidden');
 }
 function updateScheduleOptions(){
@@ -360,7 +364,17 @@ $('#s-go').onclick=()=>{
     capacity.classList.add('hidden');
   }
   $('#s-timeline').innerHTML=items.map(item=>`<div class="timeline-item${item.parallel?' parallel':''}"><div class="timeline-time">${fmtDayTime(item.start)}</div><div><div class="timeline-title">${item.label}</div>${item.note?`<div class="timeline-note">${item.note}</div>`:''}</div></div>`).join('');
+  lastScheduleText=[`Закваскулятор: расписание — ${spec.name}`, `Закваска: ${p.name}; тесто ${doughTemp} °C; хлеб нужен к ${$('#s-ready').value}.`, '', ...items.map(item=>`${fmtDayTime(item.start)} — ${item.label}${item.note?` (${item.note})`:''}`), ...(warnings.length ? ['', `Внимание: ${warnings.join(' ')}`] : [])].join('\n');
+  $('#s-copy').classList.remove('hidden');
+  $('#s-copy-status').classList.add('hidden');
   $('#s-result').classList.remove('hidden');
+};
+$('#s-copy').onclick=async()=>{
+  const status=$('#s-copy-status'), ok=await copyText(lastScheduleText);
+  status.textContent=ok?'Расписание скопировано.':'Не удалось скопировать автоматически. Выделите расписание вручную.';
+  status.classList.toggle('warn', !ok);
+  status.classList.toggle('ok', ok);
+  status.classList.remove('hidden');
 };
 
 /* ============ ПРОГНОЗ ============ */
