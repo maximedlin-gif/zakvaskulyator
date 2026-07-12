@@ -77,7 +77,7 @@ function renderProfileHint(select, hint){
 }
 
 /* ============ КАЛЬКУЛЯТОР ============ */
-let cShyd = 100;
+let cShyd = 150;
 let lastCalcText = '';
 async function copyText(text){
   if(!text) return false;
