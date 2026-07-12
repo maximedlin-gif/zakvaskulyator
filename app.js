@@ -260,6 +260,11 @@ const scheduleTarget = value => {
   return target;
 };
 const scheduleEvent = (items, start, label, note='', parallel=false) => items.push({start, label, note, parallel});
+function ovenCapacity(width, depth, footprint){
+  const gap=2;
+  const fit=(a,b)=>Math.max(0, Math.floor((width+gap)/(a+gap))) * Math.max(0, Math.floor((depth+gap)/(b+gap)));
+  return Math.max(fit(footprint[0], footprint[1]), fit(footprint[1], footprint[0]));
+}
 function renderScheduleWarning(text){
   $('#s-alert').textContent=text;
   $('#s-alert').classList.remove('hidden');
@@ -277,11 +282,18 @@ $('#s-oven-temp').value=isFinite(savedOvenTemp) && savedOvenTemp>0 ? savedOvenTe
 $('#s-steam').checked=LS.get('oven_can_steam', true) !== false;
 $('#s-oven-temp').onchange=()=>LS.set('oven_max_temp', parseNumberValue($('#s-oven-temp').value));
 $('#s-steam').onchange=()=>LS.set('oven_can_steam', $('#s-steam').checked);
+['width', 'depth'].forEach(key=>{
+  const input=$(`#s-oven-${key}`), saved=Number(LS.get(`oven_${key}_cm`, 0));
+  if(isFinite(saved) && saved>0) input.value=saved;
+  input.onchange=()=>LS.set(`oven_${key}_cm`, parseNumberValue(input.value));
+});
 $('#s-go').onclick=()=>{
   const spec=BAKING_SCHEDULES[$('#s-bread').value];
   const p=profById($('#s-prof').value);
   const doughTemp=parseNumberValue($('#s-temp').value);
   const ovenTemp=parseNumberValue($('#s-oven-temp').value);
+  const ovenWidth=parseNumberValue($('#s-oven-width').value);
+  const ovenDepth=parseNumberValue($('#s-oven-depth').value);
   const ready=scheduleTarget($('#s-ready').value);
   if(!spec || !p || !isFinite(doughTemp) || !isFinite(ovenTemp) || !ready){
     renderScheduleWarning('Выберите хлеб, закваску, температуру теста, возможности духовки и время, когда нужен хлеб.');
@@ -336,6 +348,17 @@ $('#s-go').onclick=()=>{
   if(spec.baking.some(stage=>stage.steam) && !$('#s-steam').checked) warnings.push('В начале выпечки нужен пар. Поставьте вниз противень с кипятком или сбрызните стенки духовки перед посадкой.');
   $('#s-alert').textContent=warnings.join(' ');
   $('#s-alert').classList.toggle('hidden', !warnings.length);
+  const capacity=$('#s-capacity');
+  if(ovenWidth>0 && ovenDepth>0){
+    const count=ovenCapacity(ovenWidth, ovenDepth, spec.footprint);
+    capacity.className=`callout ${count?'ok':'warn'}`;
+    capacity.textContent=count
+      ? `За одну выпечку поместится примерно ${count} шт. «${spec.name}» на поверхности ${ovenWidth}×${ovenDepth} см.`
+      : `«${spec.name}» не помещается на поверхности ${ovenWidth}×${ovenDepth} см. Выберите меньший формат или пеките в другой духовке.`;
+    capacity.classList.remove('hidden');
+  } else {
+    capacity.classList.add('hidden');
+  }
   $('#s-timeline').innerHTML=items.map(item=>`<div class="timeline-item${item.parallel?' parallel':''}"><div class="timeline-time">${fmtDayTime(item.start)}</div><div><div class="timeline-title">${item.label}</div>${item.note?`<div class="timeline-note">${item.note}</div>`:''}</div></div>`).join('');
   $('#s-result').classList.remove('hidden');
 };

@@ -109,10 +109,15 @@
         <div class="field"><label>Духовка до, °C</label><input id="s-oven-temp" class="input" type="number" inputmode="numeric" value="250"></div>
         <div class="field"><label>Пар</label><label class="check-row"><input id="s-steam" type="checkbox" checked> Могу дать</label></div>
       </div>
+      <div class="row">
+        <div class="field"><label>Ширина внутри, см</label><input id="s-oven-width" class="input" type="number" inputmode="decimal" placeholder="например 44"></div>
+        <div class="field"><label>Глубина внутри, см</label><input id="s-oven-depth" class="input" type="number" inputmode="decimal" placeholder="например 35"></div>
+      </div>
       <label class="check-row hidden" id="s-cold-wrap"><input id="s-cold" type="checkbox"> Холодная расстойка в холодильнике</label>
       <button class="btn" id="s-go">Построить расписание</button>
       <div class="result hidden" id="s-result">
         <div class="callout warn hidden" id="s-alert"></div>
+        <div class="callout ok hidden" id="s-capacity"></div>
         <div id="s-timeline" class="timeline"></div>
         <div class="disclaimer">Время ориентировочное: следите за тестом и скорректируйте следующий замес по своей муке и температуре.</div>
       </div>

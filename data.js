@@ -56,25 +56,25 @@ const BAKING_SCHEDULES = {
     name: 'Ржаной формовой', starter: ['rye'], mixMin: 20,
     bulk: { min: 3.5, max: 4.5, temp: 25, label: 'Брожение в форме' },
     proofMin: 0, preheatMin: 30, coolingMin: 720, folds: false,
-    baking: [{ label: 'Посадка', temp: 235, min: 10, steam: false }, { label: 'Допекание', temp: 180, min: 40, steam: false }],
+    footprint: [17, 11], baking: [{ label: 'Посадка', temp: 235, min: 10, steam: false }, { label: 'Допекание', temp: 180, min: 40, steam: false }],
   },
   'wheat-tin': {
     name: 'Пшеничный формовой', starter: ['wheat', 'rye', 'spelt'], mixMin: 20,
     bulk: { min: 3, max: 4, temp: 24, label: 'Брожение' },
     proofMin: 105, coldProofMin: 660, preheatMin: 30, coolingMin: 60, folds: true,
-    baking: [{ label: 'Посадка', temp: 240, min: 10, steam: false }, { label: 'Допекание', temp: 180, min: 40, steam: false }],
+    footprint: [17, 11], baking: [{ label: 'Посадка', temp: 240, min: 10, steam: false }, { label: 'Допекание', temp: 180, min: 40, steam: false }],
   },
   'wheat-hearth': {
     name: 'Пшеничный подовый', starter: ['wheat', 'rye', 'spelt'], mixMin: 20,
     bulk: { min: 3, max: 4, temp: 24, label: 'Брожение' },
     proofMin: 105, coldProofMin: 660, preheatMin: 60, coolingMin: 60, folds: true,
-    baking: [{ label: 'Выпечка с паром', temp: 240, min: 15, steam: true }, { label: 'Допекание без пара', temp: 205, min: 35, steam: false }],
+    footprint: [20, 20], baking: [{ label: 'Выпечка с паром', temp: 240, min: 15, steam: true }, { label: 'Допекание без пара', temp: 205, min: 35, steam: false }],
   },
   baguette: {
     name: 'Багет', starter: ['wheat'], mixMin: 20,
     bulk: { min: 3, max: 4, temp: 24, label: 'Брожение' },
     proofMin: 75, preheatMin: 45, coolingMin: 15, folds: true,
-    baking: [{ label: 'Выпечка с паром', temp: 245, min: 12, steam: true }, { label: 'Выпечка без пара', temp: 215, min: 15, steam: false }],
+    footprint: [65, 6], baking: [{ label: 'Выпечка с паром', temp: 245, min: 12, steam: true }, { label: 'Выпечка без пара', temp: 215, min: 15, steam: false }],
   },
 };
 
