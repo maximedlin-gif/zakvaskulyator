@@ -5,7 +5,7 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const getValue = selector => String($(selector).value || '').trim();
 const draftKey = 'zk_feedback_draft';
-const draftFields = ['#fb-area', '#fb-done', '#fb-problem', '#fb-calc', '#fb-journal', '#fb-device', '#fb-contact'];
+const draftFields = ['#fb-area', '#fb-done', '#fb-problem', '#fb-calc', '#fb-journal', '#fb-schedule', '#fb-device', '#fb-contact'];
 
 function compactUserAgent(value) {
   return String(value || '')
@@ -19,6 +19,7 @@ function buildFeedbackText() {
   const problem = getValue('#fb-problem') || '—';
   const calc = getValue('#fb-calc');
   const journal = getValue('#fb-journal');
+  const schedule = getValue('#fb-schedule');
   const device = getValue('#fb-device') || '—';
   const contact = getValue('#fb-contact') || '—';
 
@@ -32,6 +33,7 @@ function buildFeedbackText() {
 
   if (calc) lines.push('', 'Скопированный расчёт:', calc);
   if (journal) lines.push('', 'Скопированный журнал:', journal);
+  if (schedule) lines.push('', 'Скопированное расписание:', schedule);
 
   lines.push(
     '',

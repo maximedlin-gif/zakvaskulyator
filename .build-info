@@ -1,3 +1,3 @@
 zakvaskulyator static build
-const CACHE = 'zakvaskulyator-v23';
-source_hash=c92ed1089f66091e283b1b4a44d3c79afc50be38bc128a5e25ccced8cfc9e3d8
+const CACHE = 'zakvaskulyator-v24';
+source_hash=3baf0f042c65e48557d98642f7d08e9e8afedcb1486a13abf9d36d58fc2966c1
