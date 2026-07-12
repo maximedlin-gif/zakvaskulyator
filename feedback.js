@@ -4,6 +4,8 @@
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const getValue = selector => String($(selector).value || '').trim();
+const draftKey = 'zk_feedback_draft';
+const draftFields = ['#fb-area', '#fb-done', '#fb-problem', '#fb-calc', '#fb-journal', '#fb-device', '#fb-contact'];
 
 function compactUserAgent(value) {
   return String(value || '')
@@ -47,6 +49,31 @@ function setStatus(text) {
   status.classList.remove('hidden');
 }
 
+function saveDraft() {
+  const draft = Object.fromEntries(draftFields.map(selector => [selector, $(selector).value]));
+  try {
+    localStorage.setItem(draftKey, JSON.stringify(draft));
+  } catch {}
+}
+
+function restoreDraft() {
+  let draft = null;
+  try { draft = JSON.parse(localStorage.getItem(draftKey) || 'null'); } catch {}
+  if (!draft || typeof draft !== 'object') return false;
+  draftFields.forEach(selector => {
+    if (typeof draft[selector] === 'string') $(selector).value = draft[selector];
+  });
+  return true;
+}
+
+function clearDraft() {
+  if (!window.confirm('Очистить черновик отзыва с этого устройства? Это действие нельзя отменить.')) return;
+  try { localStorage.removeItem(draftKey); } catch {}
+  draftFields.forEach(selector => { $(selector).value = selector === '#fb-area' ? $(selector).options[0].value : ''; });
+  $('#fb-output').value = '';
+  $('#fb-status').classList.add('hidden');
+}
+
 function buildIntoOutput() {
   const output = $('#fb-output');
   output.value = buildFeedbackText();
@@ -77,6 +104,7 @@ async function pasteFromClipboard(targetSelector) {
   try {
     target.value = await navigator.clipboard.readText();
     target.focus();
+    saveDraft();
     setStatus('Текст вставлен из буфера.');
   } catch {
     target.focus();
@@ -85,9 +113,13 @@ async function pasteFromClipboard(targetSelector) {
 }
 
 function init() {
-  $('#fb-device').value = compactUserAgent(navigator.userAgent);
+  if (!restoreDraft()) $('#fb-device').value = compactUserAgent(navigator.userAgent);
+  draftFields.forEach(selector => {
+    $(selector).addEventListener(selector === '#fb-area' ? 'change' : 'input', saveDraft);
+  });
   $('#fb-build').addEventListener('click', buildIntoOutput);
   $('#fb-copy').addEventListener('click', copyOutput);
+  $('#fb-clear').addEventListener('click', clearDraft);
   $$('[data-paste-target]').forEach(button => {
     button.addEventListener('click', () => pasteFromClipboard(button.dataset.pasteTarget));
   });

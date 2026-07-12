@@ -218,6 +218,7 @@ select.input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://ww
 .empty { text-align:center; color:var(--ink-faint); font-size:13.5px; padding:30px 10px; }
 .journal-action { margin-top:12px; }
 .journal-clear { color:var(--red) !important; }
+.feedback-clear { color:var(--red) !important; margin-top:10px; }
 
 /* ---------- Tab bar ---------- */
 .tabbar {
