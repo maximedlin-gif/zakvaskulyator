@@ -77,8 +77,13 @@ function renderProfileHint(select, hint){
 }
 
 /* ============ КАЛЬКУЛЯТОР ============ */
-let cShyd = 150;
+const savedStarterHydration=LS.get('starter_hydration', 150);
+let cShyd = savedStarterHydration===100 || savedStarterHydration===150 ? savedStarterHydration : 150;
 let lastCalcText = '';
+function renderStarterHydration(){
+  $$('#c-shyd button').forEach(button=>button.classList.toggle('on', +button.dataset.v===cShyd));
+}
+renderStarterHydration();
 async function copyText(text){
   if(!text) return false;
   try {
@@ -129,7 +134,10 @@ function showWhenResult(html, kind=''){
   el.classList.remove('hidden');
 }
 $('#c-shyd').onclick = e => { const b=e.target.closest('button'); if(!b)return;
-  $$('#c-shyd button').forEach(x=>x.classList.toggle('on',x===b)); cShyd=+b.dataset.v; };
+  cShyd=+b.dataset.v;
+  LS.set('starter_hydration', cShyd);
+  renderStarterHydration();
+};
 $$('[data-step]').forEach(b=>b.onclick=()=>{ const inp=$('#c-dough');
   inp.value = Math.max(50, (+inp.value||0)+ (+b.dataset.d)); });
 
