@@ -1,5 +1,5 @@
 /* Закваскулятор — service worker (офлайн-кэш) */
-const CACHE = 'zakvaskulyator-v16';
+const CACHE = 'zakvaskulyator-v17';
 const ASSETS = [
   './', './index.html', './feedback.html', './styles.css', './data.js', './app.js', './feedback.js',
   './manifest.webmanifest',
@@ -18,6 +18,15 @@ self.addEventListener('activate', e => {
 });
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).then(res => {
+        if (res.ok) caches.open(CACHE).then(c => c.put(e.request, res.clone())).catch(()=>{});
+        return res;
+      }).catch(() => caches.match(e.request).then(cached => cached || caches.match('./index.html')))
+    );
+    return;
+  }
   e.respondWith(
     caches.match(e.request).then(cached => cached ||
       fetch(e.request).then(res => {
