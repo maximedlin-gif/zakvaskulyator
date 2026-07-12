@@ -373,11 +373,17 @@ function renderTracker(){
       «${p.name}» · ${temp} °C · пик к ${fmtTime(peak)}
     </div>
     <div class="row" style="gap:8px">
-      <button class="btn" id="t-done" style="flex:1">✓ Готово</button>
+      <button class="btn" id="t-done" style="flex:1">✓ Отметить пик</button>
       <button class="btn ghost" id="t-stop" style="flex:1">Снять</button>
     </div>
   </div>`;
-  $('#t-done').onclick=()=>{ addJournal(`Закваска «${p.name}» доведена до пика (${temp} °C)`); LS.set('batch',null); renderTracker(); };
+  $('#t-done').onclick=()=>{
+    const actualElapsed=(Date.now()-start)/3600000;
+    if(actualElapsed < duration*0.6 && !window.confirm(`До прогнозируемого пика ещё примерно ${fmtH(duration-actualElapsed)}. Отметить пик сейчас, если закваска уже дошла?`)) return;
+    addJournal(`Пик закваски «${p.name}» отмечен вручную: фактически через ${fmtH(actualElapsed)}, прогноз ${fmtH(duration)} (${temp} °C).`);
+    LS.set('batch',null);
+    renderTracker();
+  };
   $('#t-stop').onclick=()=>{ LS.set('batch',null); renderTracker(); };
 }
 
