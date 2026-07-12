@@ -330,9 +330,9 @@ function trackerPhase(frac){
 function renderTracker(){
   const b=LS.get('batch',null), el=$('#tracker');
   if(!b){ el.innerHTML = `<div class="card hero">
-      <div class="phase-chip"><span class="dot"></span>Нет активной закваски</div>
-      <div class="ring" style="--p:0%"><div><div class="big">🫙</div><div class="lbl">запустите брожение</div></div></div>
-      <button class="btn" id="t-start">▶ Запустить закваску</button>
+      <div class="phase-chip"><span class="dot"></span>Нет активного прогноза</div>
+      <div class="ring" style="--p:0%"><div><div class="big">🫙</div><div class="lbl">рассчитайте время до пика</div></div></div>
+      <button class="btn" id="t-start">▶ Рассчитать прогноз</button>
       <div class="hint" style="text-align:center;margin-top:8px">Выберите профиль и температуру — посчитаю время до пика и буду показывать фазу.</div>
     </div>`;
     $('#t-start').onclick=()=>go('forecast'); return;
