@@ -105,6 +105,10 @@
         <div class="field"><label>Температура теста, °C</label><input id="s-temp" class="input" type="number" inputmode="decimal" value="25"></div>
         <div class="field"><label>Хлеб нужен к</label><input id="s-ready" class="input" type="time" value="09:00"></div>
       </div>
+      <div class="row">
+        <div class="field"><label>Духовка до, °C</label><input id="s-oven-temp" class="input" type="number" inputmode="numeric" value="250"></div>
+        <div class="field"><label>Пар</label><label class="check-row"><input id="s-steam" type="checkbox" checked> Могу дать</label></div>
+      </div>
       <label class="check-row hidden" id="s-cold-wrap"><input id="s-cold" type="checkbox"> Холодная расстойка в холодильнике</label>
       <button class="btn" id="s-go">Построить расписание</button>
       <div class="result hidden" id="s-result">

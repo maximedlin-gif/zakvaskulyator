@@ -272,13 +272,19 @@ function updateScheduleOptions(){
   if(!spec.coldProofMin) $('#s-cold').checked=false;
 }
 $('#s-bread').onchange=updateScheduleOptions;
+const savedOvenTemp=Number(LS.get('oven_max_temp', 250));
+$('#s-oven-temp').value=isFinite(savedOvenTemp) && savedOvenTemp>0 ? savedOvenTemp : 250;
+$('#s-steam').checked=LS.get('oven_can_steam', true) !== false;
+$('#s-oven-temp').onchange=()=>LS.set('oven_max_temp', parseNumberValue($('#s-oven-temp').value));
+$('#s-steam').onchange=()=>LS.set('oven_can_steam', $('#s-steam').checked);
 $('#s-go').onclick=()=>{
   const spec=BAKING_SCHEDULES[$('#s-bread').value];
   const p=profById($('#s-prof').value);
   const doughTemp=parseNumberValue($('#s-temp').value);
+  const ovenTemp=parseNumberValue($('#s-oven-temp').value);
   const ready=scheduleTarget($('#s-ready').value);
-  if(!spec || !p || !isFinite(doughTemp) || !ready){
-    renderScheduleWarning('Выберите хлеб, закваску, температуру теста и время, когда нужен хлеб.');
+  if(!spec || !p || !isFinite(doughTemp) || !isFinite(ovenTemp) || !ready){
+    renderScheduleWarning('Выберите хлеб, закваску, температуру теста, возможности духовки и время, когда нужен хлеб.');
     return;
   }
   if(!spec.starter.includes(starterKind(p))){
@@ -324,7 +330,12 @@ $('#s-go').onclick=()=>{
   const levainHours=timeToPeak(p, doughTemp);
   scheduleEvent(items, new Date(mixStart.getTime()-levainHours*3600000), 'Освежить закваску', `до пика примерно ${fmtH(levainHours)} при ${doughTemp} °C`);
   items.sort((a,b)=>a.start-b.start);
-  $('#s-alert').classList.add('hidden');
+  const warnings=[];
+  const requiredTemp=Math.max(...spec.baking.map(stage=>stage.temp));
+  if(ovenTemp<requiredTemp) warnings.push(`Духовка нагревается только до ${ovenTemp} °C, а для «${spec.name}» в расписании нужно до ${requiredTemp} °C. Увеличьте время выпечки и следите за корочкой.`);
+  if(spec.baking.some(stage=>stage.steam) && !$('#s-steam').checked) warnings.push('В начале выпечки нужен пар. Поставьте вниз противень с кипятком или сбрызните стенки духовки перед посадкой.');
+  $('#s-alert').textContent=warnings.join(' ');
+  $('#s-alert').classList.toggle('hidden', !warnings.length);
   $('#s-timeline').innerHTML=items.map(item=>`<div class="timeline-item${item.parallel?' parallel':''}"><div class="timeline-time">${fmtDayTime(item.start)}</div><div><div class="timeline-title">${item.label}</div>${item.note?`<div class="timeline-note">${item.note}</div>`:''}</div></div>`).join('');
   $('#s-result').classList.remove('hidden');
 };
