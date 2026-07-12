@@ -81,7 +81,7 @@
     <div class="card">
       <h3>Когда покормить, чтобы успеть к замесу</h3>
       <div class="hint" style="margin-bottom:10px">Привязка к прогнозу: выберите профиль и температуру — посчитаю, во сколько ставить кормление.</div>
-      <div class="field"><label>Профиль закваски</label><select id="c-prof" class="input"></select></div>
+      <div class="field"><label>Профиль закваски</label><select id="c-prof" class="input"></select><div class="profile-hint" id="c-profile-hint"></div></div>
       <div class="row">
         <div class="field"><label>Температура ведения, °C</label><input id="c-temp" class="input" type="number" inputmode="decimal" value="26"></div>
         <div class="field"><label>Замес в</label><input id="c-bake" class="input" type="time" value="09:00"></div>
@@ -101,7 +101,7 @@
         <button data-v="reverse">Успеть к сроку</button>
       </div>
 
-      <div class="field"><label>Профиль закваски</label><select id="f-prof" class="input"></select></div>
+      <div class="field"><label>Профиль закваски</label><select id="f-prof" class="input"></select><div class="profile-hint" id="f-profile-hint"></div></div>
       <div class="field">
         <label>Температура закваски, °C</label>
         <input id="f-temp" class="input" type="number" inputmode="decimal" value="26">

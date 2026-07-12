@@ -69,6 +69,12 @@ function fillProfileSelect(sel){
   });
 }
 const profById = id => PROFILES.find(p=>p.id===id);
+function renderProfileHint(select, hint){
+  const p=profById(select.value);
+  hint.textContent=p
+    ? `Ориентир по профилю: ${p.tMin}–${p.tMax} °C, пик обычно через ${p.timeMin}–${p.timeMax} ч.`
+    : '';
+}
 
 /* ============ КАЛЬКУЛЯТОР ============ */
 let cShyd = 100;
@@ -499,6 +505,12 @@ function renderLearn(){
 /* ============ Старт ============ */
 fillProfileSelect($('#c-prof'));
 fillProfileSelect($('#f-prof'));
+[['#c-prof', '#c-profile-hint'], ['#f-prof', '#f-profile-hint']].forEach(([selectId, hintId])=>{
+  const select=$(selectId), hint=$(hintId);
+  const update=()=>renderProfileHint(select, hint);
+  select.onchange=update;
+  update();
+});
 renderProfiles();
 renderLearn();
 renderJournal();

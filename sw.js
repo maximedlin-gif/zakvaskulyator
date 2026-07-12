@@ -1,5 +1,5 @@
 /* Закваскулятор — service worker (офлайн-кэш) */
-const CACHE = 'zakvaskulyator-v11';
+const CACHE = 'zakvaskulyator-v12';
 const ASSETS = [
   './', './index.html', './feedback.html', './styles.css', './data.js', './app.js', './feedback.js',
   './manifest.webmanifest',
