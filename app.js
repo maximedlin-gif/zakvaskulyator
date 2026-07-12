@@ -505,12 +505,21 @@ function renderLearn(){
 /* ============ Старт ============ */
 fillProfileSelect($('#c-prof'));
 fillProfileSelect($('#f-prof'));
-[['#c-prof', '#c-profile-hint'], ['#f-prof', '#f-profile-hint']].forEach(([selectId, hintId])=>{
-  const select=$(selectId), hint=$(hintId);
-  const update=()=>renderProfileHint(select, hint);
-  select.onchange=update;
-  update();
-});
+const profileControls=[
+  {select:$('#c-prof'), hint:$('#c-profile-hint')},
+  {select:$('#f-prof'), hint:$('#f-profile-hint')},
+];
+const savedProfileId=LS.get('last_profile', '');
+function applyProfile(id){
+  if(!profById(id)) return;
+  profileControls.forEach(({select,hint})=>{
+    select.value=id;
+    renderProfileHint(select, hint);
+  });
+  LS.set('last_profile', id);
+}
+applyProfile(typeof savedProfileId==='string' && profById(savedProfileId) ? savedProfileId : $('#f-prof').value);
+profileControls.forEach(({select})=>{ select.onchange=()=>applyProfile(select.value); });
 renderProfiles();
 renderLearn();
 renderJournal();
