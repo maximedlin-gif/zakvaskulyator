@@ -11,7 +11,7 @@
 // time — часы до пика. Диапазоны из таблицы профилей.
 const PROFILES = [
   // Ржаные и пшеничные
-  { id: 'rye-whole',   group: 'Ржаные и пшеничные', name: 'Ржаная, цельнозерновая', tMin: 28, tMax: 30, hMin: 100, hMax: 110, timeMin: 4, timeMax: 7,  feed: '1:2:3', note: 'Самая активная. Протокол «Едлин Хлеб»: 150% гидратация, 1:2:3.' },
+  { id: 'rye-whole',   group: 'Ржаные и пшеничные', name: 'Ржаная, цельнозерновая', tMin: 20, tMax: 28, hMin: 150, hMax: 150, timeMin: 4, timeMax: 8, feed: '1:2:3', note: 'Протокол «Едлин Хлеб»: 150% гидратация, 1:2:3. Рабочая температура 20–28 °C, оптимум 25–28 °C.' },
   { id: 'rye-light',   group: 'Ржаные и пшеничные', name: 'Ржаная, обдирная',       tMin: 27, tMax: 29, hMin: 100, hMax: 100, timeMin: 5, timeMax: 8,  feed: '1:2:2' },
   { id: 'wheat-whole', group: 'Ржаные и пшеничные', name: 'Пшеничная, цельнозерновая', tMin: 26, tMax: 28, hMin: 100, hMax: 110, timeMin: 5, timeMax: 8, feed: '1:2:2' },
   { id: 'wheat-t80',   group: 'Ржаные и пшеничные', name: 'Пшеничная, Т80',         tMin: 25, tMax: 27, hMin: 100, hMax: 100, timeMin: 6, timeMax: 9,  feed: '1:2:2' },
